@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"fmt"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
@@ -29,4 +28,8 @@ func Init() (err error) {
 	db.SetMaxOpenConns(viper.GetInt("mysql.max_open_connects"))
 	db.SetMaxIdleConns(viper.GetInt("mysql.max_idle_connects"))
 	return
+}
+
+func Close() {
+	_ = db.Close()
 }

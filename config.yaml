@@ -9,6 +9,7 @@ log:
   max_size: 200
   max_age: 30
   max_backups: 7
+  logInConsole: true
 
 mysql:
   host: "192.168.32.2"
@@ -23,6 +24,6 @@ mysql:
 redis:
   host: "192.168.32.2"
   port: 6379
-  password: ""
+  password: "baifendian"
   dbname: 0
   pool_size: 100

@@ -59,6 +59,11 @@ func getLogWriter(filename string, maxSize, maxBackup, maxAge int) zapcore.Write
 		MaxBackups: maxBackup,
 		MaxAge:     maxAge,
 	}
+
+	// 根据条件选择是否同时打印控制台和文件日志
+	if viper.GetBool("log.logInConsole") {
+		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
+	}
 	return zapcore.AddSync(lumberJackLogger)
 }
 

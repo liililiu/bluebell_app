@@ -2,7 +2,6 @@ package redis
 
 import (
 	"fmt"
-
 	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 )
@@ -25,4 +24,8 @@ func Init() (err error) {
 		return err
 	}
 	return nil
+}
+
+func Close() {
+	_ = rdb.Close()
 }
