@@ -1,0 +1,23 @@
+app:
+  name: "bluebell_app"
+  mode: "dev"
+  port: 8081
+
+log:
+  level: "debug"
+  filename: "bluebell_app.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+
+mysql:
+  host: "192.168.32.2"
+  port: 3306
+  user: root
+  password: "baifendian"
+  dbname: "sql_demo"
+
+redis:
+  host: "192.168.32.2"
+  port: 6379
+  dbname: 0
