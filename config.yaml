@@ -16,8 +16,13 @@ mysql:
   user: root
   password: "baifendian"
   dbname: "sql_demo"
+  max_open_connects: 200
+  max_idle_connects: 50
+
 
 redis:
   host: "192.168.32.2"
   port: 6379
+  password: ""
   dbname: 0
+  pool_size: 100
