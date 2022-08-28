@@ -14,6 +14,5 @@ func Setup() *gin.Engine {
 		c.String(http.StatusOK, "hi,baby!")
 
 	})
-
 	return r
 }

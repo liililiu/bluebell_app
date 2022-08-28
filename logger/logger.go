@@ -1,17 +1,20 @@
 package logger
 
 import (
+	"bluebell_app/settings"
+	"bluebell_app/utils"
+	"fmt"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"path"
 	"runtime/debug"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/natefinch/lumberjack"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -21,26 +24,36 @@ var lg *zap.Logger
 // 注意这里的lg暂时没有用全局zap.L()代替
 
 // InitLogger 初始化Logger
-func Init() (err error) {
-	writeSyncer := getLogWriter(
-		viper.GetString("log.filename"),
-		viper.GetInt("log.max_size"),
-		viper.GetInt("log.max_backups"),
-		viper.GetInt("log.max_age"))
+
+func Init(cfg *settings.LogConfig) (err error) {
+	// core 需要三部分
+
+	// 第二部分：encoder
 	encoder := getEncoder()
+
+	// 第三部分： level
 	var l = new(zapcore.Level)
-	// 将配置文件中的level类型转换为zapcore的level
-	err = l.UnmarshalText([]byte(viper.GetString("" +
-		"log.level")))
+	// 将配置文件中的level类型转换为zapCore的level
+	err = l.UnmarshalText([]byte(
+		//viper.GetString("" + "log.level"),
+		cfg.Level,
+	))
+
 	if err != nil {
+		fmt.Println("将配置文件中的level类型转换为zapCore的level失败，err：", err)
 		return
 	}
+	// 第一部分：writeSyncer
+	writeSyncer := getLogWriter(l.String())
+
 	core := zapcore.NewCore(encoder, writeSyncer, l)
 
 	lg = zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(lg) // 替换zap包中全局的logger实例，后续在其他包中只需使用zap.L()调用即可
 	return
 }
+
+// Encoder 的函数式配置
 
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
@@ -52,20 +65,36 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
-func getLogWriter(filename string, maxSize, maxBackup, maxAge int) zapcore.WriteSyncer {
-	lumberJackLogger := &lumberjack.Logger{
-		Filename:   filename,
-		MaxSize:    maxSize,
-		MaxBackups: maxBackup,
-		MaxAge:     maxAge,
+// WriteSyncer 的函数式配置
+
+func getLogWriter(level string) zapcore.WriteSyncer {
+	// 检查日志目录
+	if ok, _ := utils.PathExists(settings.GlobalConfig.LogConfig.Dir); !ok { // 判断是否有Director文件夹
+		fmt.Printf("create %v directory\n", settings.GlobalConfig.LogConfig.Dir)
+		_ = os.Mkdir(settings.GlobalConfig.LogConfig.Dir, os.ModePerm)
 	}
+	fileWriter, _ := rotatelogs.New(
+		// 生成日志文件 日志文件名可以按时间来创建
+		path.Join(settings.GlobalConfig.LogConfig.Dir, "%Y-%m-%d", level+".log"),
+		// 日志文件相关的时间 根本本地时间
+		rotatelogs.WithClock(rotatelogs.Local),
+		// 文件存活有效期
+		rotatelogs.WithMaxAge(time.Duration(settings.GlobalConfig.LogConfig.MaxAge)*24*time.Hour), // 日志留存时间
+		// 多久创建一次新的日志文件
+		rotatelogs.WithRotationTime(time.Hour*24),
+	)
 
 	// 根据条件选择是否同时打印控制台和文件日志
-	if viper.GetBool("log.logInConsole") {
-		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
+	//if viper.GetBool("log.logInConsole") {
+	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
+	//}
+	if settings.GlobalConfig.LogConfig.LogInConsole {
+		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
 	}
-	return zapcore.AddSync(lumberJackLogger)
+	return zapcore.AddSync(fileWriter)
 }
+
+// 两个中间件
 
 // GinLogger 接收gin框架默认的日志
 func GinLogger() gin.HandlerFunc {

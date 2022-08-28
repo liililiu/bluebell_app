@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 	//2.初始化日志
-	if err := logger.Init(); err != nil {
+	if err := logger.Init(settings.GlobalConfig.LogConfig); err != nil {
 		zap.L().Error("init logger failed , err: %v", zap.Error(err))
 		return
 	}
@@ -36,20 +36,23 @@ func main() {
 	defer zap.L().Sync()
 
 	//3.初始化mysql
-	if err := mysql.Init(); err != nil {
+	if err := mysql.Init(settings.GlobalConfig.MysqlConfig); err != nil {
 		zap.L().Error("init mysql failed , err: %v", zap.Error(err))
 		return
 	}
+	zap.L().Info("mysql init success...")
 	defer mysql.Close()
 	//4.初始化redis
-	if err := redis.Init(); err != nil {
+	if err := redis.Init(settings.GlobalConfig.RedisConfig); err != nil {
 		zap.L().Error("init redis failed , err: %v", zap.Error(err))
 		return
 	}
+	zap.L().Info("redis init success...")
 	defer redis.Close()
 
 	//5.注册路由
 	r := routes.Setup()
+
 	//6.启停服务（优雅关机）
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%d", viper.GetInt(""+
