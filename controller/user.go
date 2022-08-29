@@ -15,14 +15,14 @@ import (
 // 3 返回相应
 
 func SignUpHandler(c *gin.Context) {
-	// 获取参数校验
+	// 1.获取参数校验
 	p := new(models.ParamSignUp)
 
 	// ShouldBindJSON 只能校验类型（json）、以及字段类型（字符串类型），其他的校验做不到
 	if err := c.ShouldBindJSON(p); err != nil {
 		// 请求参数有误
 		zap.L().Error("SignUp with invalid param", zap.Error(err)) //打印日志
-		// 判断err是否是
+		// 判断err是否是validator.ValidationErrors类型
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			c.JSON(http.StatusOK, gin.H{
@@ -47,9 +47,14 @@ func SignUpHandler(c *gin.Context) {
 	//	return
 	//}
 	fmt.Println(p)
-	// 业务处理
-	logic.Signup(p)
-	// 返回数据
+	// 2.业务处理
+	if err := logic.Signup(p); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+		return
+	}
+	// 3.返回数据
 	c.JSON(http.StatusOK, gin.H{
 
 		"msg": "success",
