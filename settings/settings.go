@@ -9,12 +9,13 @@ import (
 var GlobalConfig = new(AppConfig)
 
 type AppConfig struct {
-	Name         string `mapstructure:"name"`
-	Mode         string `mapstructure:"mode"`
-	Port         int    `mapstructure:"port"`
-	*LogConfig   `mapstructure:"log"`
-	*MysqlConfig `mapstructure:"mysql"`
-	*RedisConfig `mapstructure:"redis"`
+	Name             string `mapstructure:"name"`
+	Mode             string `mapstructure:"mode"`
+	Port             int    `mapstructure:"port"`
+	*LogConfig       `mapstructure:"log"`
+	*MysqlConfig     `mapstructure:"mysql"`
+	*RedisConfig     `mapstructure:"redis"`
+	*SnowflakeConfig `mapstructure:"snowflake"`
 }
 
 type LogConfig struct {
@@ -44,6 +45,14 @@ type RedisConfig struct {
 	PoolSize int    `mapstructure:"pool_size"`
 }
 
+type SnowflakeConfig struct {
+	StartTime string `mapstructure:"start_time"`
+	MachineID int64  `mapstructure:"machine_ID"`
+}
+
+// Viper
+// 优先级: 命令行 > 环境变量 > 默认值
+
 func Init() (err error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -64,7 +73,7 @@ func Init() (err error) {
 		fmt.Println("配置文件已修改...")
 
 		if err := viper.Unmarshal(&GlobalConfig); err != nil {
-			fmt.Println("viper.Unmarshal failed,err:", err)
+			fmt.Println("viper.  failed,err:", err)
 		}
 	})
 

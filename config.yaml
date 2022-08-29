@@ -17,7 +17,7 @@ mysql:
   port: 3306
   user: "root"
   password: "baifendian"
-  dbname: "sql_demo"
+  dbname: "bluebell"
   max_open_connects: 200
   max_idle_connects: 50
 
@@ -28,3 +28,7 @@ redis:
   password: "baifendian"
   dbname: 0
   pool_size: 100
+
+snowflake:
+  start_time: "2022-08-29"
+  machine_ID: 1

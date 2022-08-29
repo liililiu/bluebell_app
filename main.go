@@ -4,6 +4,7 @@ import (
 	"bluebell_app/dao/mysql"
 	"bluebell_app/dao/redis"
 	"bluebell_app/logger"
+	sf "bluebell_app/pkg/snowflake"
 	"bluebell_app/routes"
 	"bluebell_app/settings"
 	"context"
@@ -49,6 +50,12 @@ func main() {
 	}
 	zap.L().Info("redis init success...")
 	defer redis.Close()
+
+	//uuid 初始化
+	if err := sf.Init(settings.GlobalConfig.SnowflakeConfig.StartTime, settings.GlobalConfig.SnowflakeConfig.MachineID); err != nil {
+		zap.L().Error("init uuid failed , err: %v", zap.Error(err))
+		return
+	}
 
 	//5.注册路由
 	r := routes.Setup()
