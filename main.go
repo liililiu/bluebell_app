@@ -58,7 +58,7 @@ func main() {
 	}
 
 	//5.注册路由
-	r := routes.Setup()
+	r := routes.SetupRouter()
 
 	//6.启停服务（优雅关机）
 	srv := &http.Server{
