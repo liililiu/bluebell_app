@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bluebell_app/controller"
 	"bluebell_app/dao/mysql"
 	"bluebell_app/dao/redis"
 	"bluebell_app/logger"
@@ -54,6 +55,12 @@ func main() {
 	//uuid 初始化
 	if err := sf.Init(settings.GlobalConfig.SnowflakeConfig.StartTime, settings.GlobalConfig.SnowflakeConfig.MachineID); err != nil {
 		zap.L().Error("init uuid failed , err: %v", zap.Error(err))
+		return
+	}
+
+	// 初始化gin框架内置的validator的翻译器
+	if err := controller.InitTrans("zh"); err != nil {
+		zap.L().Error("init InitTrans failed , err: %v", zap.Error(err))
 		return
 	}
 
