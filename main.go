@@ -10,7 +10,6 @@ import (
 	"bluebell_app/settings"
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -28,8 +27,6 @@ func main() {
 		zap.L().Error("init settings failed , err: %v", zap.Error(err))
 		return
 	}
-	config := settings.GlobalConfig
-	fmt.Printf("%v, %v, %v", config.Name, config.Mode, config.Version)
 	//2.初始化日志
 	if err := logger.Init(settings.GlobalConfig.LogConfig, settings.GlobalConfig.Mode); err != nil {
 		zap.L().Error("init logger failed , err: %v", zap.Error(err))
@@ -71,8 +68,7 @@ func main() {
 
 	//6.启停服务（优雅关机）
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%d", viper.GetInt(""+
-			"app.port")),
+		Addr:    fmt.Sprintf(":%d", settings.GlobalConfig.Port),
 		Handler: r,
 	}
 

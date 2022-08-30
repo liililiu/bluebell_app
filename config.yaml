@@ -1,8 +1,7 @@
-app:
-  name: "bluebell_app"
-  mode: "dev"
-  version: "v0.0.1"
-  port: 27777
+name: "bluebell_app"
+mode: "dev"
+version: "v0.0.1"
+port: 27777
 
 log:
   level: "info"
