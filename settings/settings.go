@@ -11,6 +11,7 @@ var GlobalConfig = new(AppConfig)
 type AppConfig struct {
 	Name             string `mapstructure:"name"`
 	Mode             string `mapstructure:"mode"`
+	Version          string `mapstructure:"version"`
 	Port             int    `mapstructure:"port"`
 	*LogConfig       `mapstructure:"log"`
 	*MysqlConfig     `mapstructure:"mysql"`
@@ -63,6 +64,7 @@ func Init() (err error) {
 		fmt.Printf("viper.ReadInConfig() failed,err: %v\n", err)
 		return
 	}
+
 	viper.WatchConfig()
 
 	if err := viper.Unmarshal(&GlobalConfig); err != nil {

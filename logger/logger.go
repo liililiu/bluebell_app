@@ -25,7 +25,7 @@ var lg *zap.Logger
 
 // InitLogger 初始化Logger
 
-func Init(cfg *settings.LogConfig) (err error) {
+func Init(cfg *settings.LogConfig, mode string) (err error) {
 	// core 需要三部分
 
 	// 第二部分：encoder
@@ -45,8 +45,20 @@ func Init(cfg *settings.LogConfig) (err error) {
 	}
 	// 第一部分：writeSyncer
 	writeSyncer := getLogWriter(l.String())
-
-	core := zapcore.NewCore(encoder, writeSyncer, l)
+	var core zapcore.Core
+	fmt.Printf("日志模式mode的值：%v\n", mode)
+	if mode == "dev" {
+		// 开发模式,日志打印到终端;根据需要选择是否打印到文件
+		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+		core = zapcore.NewTee(
+			zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel),
+			//zapcore.NewCore(zapcore.NewCore(encoder, writeSyncer, l))
+		)
+		fmt.Println("日志记录模式：dev")
+	} else {
+		core = zapcore.NewCore(encoder, writeSyncer, l)
+		fmt.Println("日志记录模式：非dev")
+	}
 
 	lg = zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(lg) // 替换zap包中全局的logger实例，后续在其他包中只需使用zap.L()调用即可
@@ -88,9 +100,9 @@ func getLogWriter(level string) zapcore.WriteSyncer {
 	//if viper.GetBool("log.logInConsole") {
 	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
 	//}
-	if settings.GlobalConfig.LogConfig.LogInConsole {
-		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
-	}
+	//if settings.GlobalConfig.LogConfig.LogInConsole {
+	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
+	//}
 	return zapcore.AddSync(fileWriter)
 }
 

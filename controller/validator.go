@@ -26,6 +26,7 @@ func InitTrans(locale string) (err error) {
 
 		// 注册一个获取json tag的自定义方法
 		// 使得返回信息的字段名与前端保持一直，而不是后端结构体字段
+		// ##第一个注册函数
 		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
 			if name == "-" {
@@ -33,7 +34,7 @@ func InitTrans(locale string) (err error) {
 			}
 			return name
 		})
-
+		// 第二个注册函数
 		// 为SignUpParam注册自定义校验方法
 		v.RegisterStructValidation(SignUpParamStructLevelValidation, models.ParamSignUp{})
 
@@ -67,7 +68,7 @@ func InitTrans(locale string) (err error) {
 	return
 }
 
-// 去除返回前端msg信息的结构体前缀字段
+// 去除返回前端msg信息的结构体前缀字段，去掉结构体名称前缀
 func removeTopStruct(fields map[string]string) map[string]string {
 	res := map[string]string{}
 	for field, err := range fields {

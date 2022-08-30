@@ -28,8 +28,10 @@ func main() {
 		zap.L().Error("init settings failed , err: %v", zap.Error(err))
 		return
 	}
+	config := settings.GlobalConfig
+	fmt.Printf("%v, %v, %v", config.Name, config.Mode, config.Version)
 	//2.初始化日志
-	if err := logger.Init(settings.GlobalConfig.LogConfig); err != nil {
+	if err := logger.Init(settings.GlobalConfig.LogConfig, settings.GlobalConfig.Mode); err != nil {
 		zap.L().Error("init logger failed , err: %v", zap.Error(err))
 		return
 	}
@@ -81,7 +83,7 @@ func main() {
 		}
 	}()
 
-	// 等待中断信号来优雅地关闭服务器，为关闭服务器操作设置一个5秒的超时
+	// ，为关闭服务器操作设置一个5等待中断信号来优雅地关闭服务器秒的超时
 	quit := make(chan os.Signal, 1) // 创建一个接收信号的通道
 	// kill 默认会发送 syscall.SIGTERM 信号
 	// kill -2 发送 syscall.SIGINT 信号，我们常用的Ctrl+C就是触发系统SIGINT信号

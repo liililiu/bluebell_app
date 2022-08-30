@@ -18,14 +18,16 @@ func SignUpHandler(c *gin.Context) {
 	// 1.获取参数校验
 	p := new(models.ParamSignUp)
 
+	// 在web开发中一个不可避免的环节就是对请求参数进行校验，通常我们会在代码中定义与请求参数相对应的模型（结构体）
 	// ShouldBindJSON 只能校验类型（json）、以及字段类型（字符串类型），其他的校验做不到
 	if err := c.ShouldBindJSON(p); err != nil {
-		// 请求参数有误
+		// 请求参数有误,绑定失败
 		zap.L().Error("SignUp with invalid param", zap.Error(err)) //打印日志
 		// 判断err是否是validator.ValidationErrors类型
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			c.JSON(http.StatusOK, gin.H{
+				// 非validator.ValidationErrors类型错误直接返回
 				"msg": err.Error(),
 			})
 			return
