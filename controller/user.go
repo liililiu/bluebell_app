@@ -3,7 +3,6 @@ package controller
 import (
 	"bluebell_app/logic"
 	"bluebell_app/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -48,7 +47,6 @@ func SignUpHandler(c *gin.Context) {
 	//	})
 	//	return
 	//}
-	fmt.Println(p)
 	// 2.业务处理
 	if err := logic.Signup(p); err != nil {
 		c.JSON(http.StatusOK, gin.H{

@@ -51,17 +51,22 @@ func main() {
 	zap.L().Info("redis init success...")
 	defer redis.Close()
 
+	// 初始化gin框架内置的validator的翻译器
+	if err := controller.InitTrans("zh"); err != nil {
+		zap.L().Error("init InitTrans failed , err: %v", zap.Error(err))
+		return
+	}
+
+	zap.L().Info("validator.InitTrans init success...")
+
 	//uuid 初始化
 	if err := sf.Init(settings.GlobalConfig.SnowflakeConfig.StartTime, settings.GlobalConfig.SnowflakeConfig.MachineID); err != nil {
 		zap.L().Error("init uuid failed , err: %v", zap.Error(err))
 		return
 	}
 
-	// 初始化gin框架内置的validator的翻译器
-	if err := controller.InitTrans("zh"); err != nil {
-		zap.L().Error("init InitTrans failed , err: %v", zap.Error(err))
-		return
-	}
+	zap.L().Info("uuid init success...")
+	zap.L().Info("all init success, start to SetupRouter...")
 
 	//5.注册路由
 	r := routes.SetupRouter()
