@@ -12,10 +12,10 @@ import (
 
 func Signup(p *models.ParamSignUp) (err error) {
 	//判断用户是否存在
-	err = mysql.CheckUserExist(p.Username)
-	if err != nil {
-		return err // 数据库查询异常
+	if err := mysql.CheckUserExist(p.Username); err != nil {
+		return err
 	}
+
 	//生成uuid
 	userID := sf.GenID()
 	// 构造一个user实例
