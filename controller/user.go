@@ -49,6 +49,7 @@ func SignUpHandler(c *gin.Context) {
 	//}
 	// 2.业务处理
 	if err := logic.Signup(p); err != nil {
+		zap.L().Error("logic.Signup failed", zap.Error(err)) //打印日志
 		c.JSON(http.StatusOK, gin.H{
 			"msg": err.Error(),
 		})
@@ -57,6 +58,44 @@ func SignUpHandler(c *gin.Context) {
 	// 3.返回数据
 	c.JSON(http.StatusOK, gin.H{
 
+		"msg": "success",
+	})
+}
+
+func LoginHandler(c *gin.Context) {
+	//1.参数校验(这一块可直接复用)
+	p := new(models.ParamLogin)
+	if err := c.ShouldBindJSON(p); err != nil {
+		// 请求参数有误,绑定失败
+		zap.L().Error("Login with invalid param", zap.Error(err)) //打印日志
+		// 判断err是否是validator.ValidationErrors类型
+		errs, ok := err.(validator.ValidationErrors)
+		if !ok {
+			c.JSON(http.StatusOK, gin.H{
+				// 非validator.ValidationErrors类型错误直接返回
+				"msg": err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			// 调用错误类型翻译器进行中文翻译
+			// 去除返回前端信息中的，msg的结构体前缀；涉及反射，会影响效率
+			"msg": removeTopStruct(errs.Translate(trans)),
+		})
+		return
+	}
+	//2.业务处理
+	if err := logic.Login(p); err != nil {
+		zap.L().Error("logic.Login failed", zap.String("username", p.Username), zap.Error(err)) //打印日志
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "用户名密码错误!", //直接屏蔽Login返回的具体错误类型(如返回Login具体'用户名不存在错误'
+			//直接暴漏该用户不存在,恶意注册等)
+			//"msg": err.Error(),
+		})
+		return
+	}
+	//3.返回响应
+	c.JSON(http.StatusOK, gin.H{
 		"msg": "success",
 	})
 }

@@ -3,6 +3,7 @@ package mysql
 import (
 	"bluebell_app/models"
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"errors"
 )
@@ -36,4 +37,23 @@ func encryptPassword(oPassword string) string {
 	h := md5.New()
 	h.Write([]byte(secret))
 	return hex.EncodeToString(h.Sum([]byte(oPassword)))
+}
+
+func Login(p *models.User) (err error) {
+	var user models.User
+	//1.查询用户是否存在
+	sqlStr := `select user_id,username,password from user where username =?`
+	err = db.Get(&user, sqlStr, p.UserName)
+	if err == sql.ErrNoRows {
+		return errors.New("用户不存在")
+	}
+	if err != nil {
+		return err // 查询数据库异常
+	}
+	//2.比对密码
+	oPassword := p.PassWord
+	if encryptPassword(oPassword) != user.PassWord {
+		return errors.New("密码错误")
+	}
+	return nil
 }

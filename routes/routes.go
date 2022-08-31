@@ -19,6 +19,7 @@ func SetupRouter() *gin.Engine {
 	})
 
 	r.POST("/signup", controller.SignUpHandler)
+	r.POST("/login", controller.LoginHandler)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
