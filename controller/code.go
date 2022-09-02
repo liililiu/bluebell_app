@@ -12,6 +12,9 @@ const (
 	CodeUserNotExist
 	CodeInvalidPassword
 	CodeServerBusy
+
+	CodeNeedLogin
+	CodeInvalidToken
 )
 
 var codeMsgMap = map[ResCode]string{
@@ -21,6 +24,9 @@ var codeMsgMap = map[ResCode]string{
 	CodeUserNotExist:    "用户名不存在",
 	CodeInvalidPassword: "用户名密码错误",
 	CodeServerBusy:      "服务繁忙",
+
+	CodeNeedLogin:    "需要登录",
+	CodeInvalidToken: "无效token",
 }
 
 // Msg 获取code对应的msg的方法
