@@ -20,6 +20,7 @@ func SetupRouter() *gin.Engine {
 	v1.Use(middlewares.JWTAuthMiddleware())
 	{
 		v1.GET("/community", controller.CommunityHandler)
+		v1.GET("/community/:id", controller.CommunityDetailHandler)
 	}
 
 	r.NoRoute(func(c *gin.Context) {

@@ -3,16 +3,48 @@ package controller
 // 社区相关
 
 import (
+	"bluebell_app/dao/mysql"
 	"bluebell_app/logic"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"strconv"
 )
+
+// CommunityHandler获取社区名称列表
 
 func CommunityHandler(c *gin.Context) {
 	//获取所有的社区相关的id以及name
 	data, err := logic.GetCommunityList()
 	if err != nil {
 		zap.L().Error("logic.GetCommunityList() failed, ", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+	ResponseSuccess(c, data)
+
+}
+
+// CommunityDetailHandler 获取社区详情
+
+func CommunityDetailHandler(c *gin.Context) {
+	//根据id来实现；解析参数，拿到id
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		zap.L().Error("用户请求id参数错误：strconv.ParseInt failed,", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+
+	//调用logic层进行业务处理
+	data, err := logic.GetCommunityDetail(id)
+	if err != nil {
+		if err == mysql.ErrorNoRow {
+			zap.L().Warn("用户所查找的社区id不存在", zap.Int64("id值：", id))
+			ResponseError(c, CodeInvalidRow)
+			return
+		}
+		zap.L().Error("logic.GetCommunityDetail failed,", zap.Error(err))
 		ResponseError(c, CodeServerBusy)
 		return
 	}

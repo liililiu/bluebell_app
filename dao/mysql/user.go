@@ -5,20 +5,13 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"errors"
 )
 
 // 把每一步数据库操作封装成函数，
 // 等待logic层根据业务需要调用
 
-var (
-	ErrorUserExist       = errors.New("用户已存在")
-	ErrorUserNotExist    = errors.New("用户不存在")
-	ErrorInvalidPassword = errors.New("密码错误")
-	Errorsql             = errors.New("数据库查询异常")
-)
-
 func CheckUserExist(uname string) error {
+	//goland:noinspection SqlResolve
 	sqlStr := `select count(user_id) from user where username=?`
 	var count int
 	if err := db.Get(&count, sqlStr, uname); err != nil {
@@ -34,6 +27,7 @@ func InsertUser(u *models.User) (err error) {
 	//对密码进行加密
 	newPassword := encryptPassword(u.PassWord)
 	//执行sql入库语句
+	//goland:noinspection SqlResolve
 	sqlStr := `insert into user(user_id,username,password) values(?,?,?)`
 	_, err = db.Exec(sqlStr, u.UserID, u.UserName, newPassword)
 	return err
@@ -49,6 +43,7 @@ func encryptPassword(oPassword string) string {
 func Login(p *models.User) (err error) {
 	var user models.User
 	//1.查询用户是否存在
+	//goland:noinspection SqlResolve
 	sqlStr := `select user_id,username,password from user where username =?`
 	err = db.Get(&user, sqlStr, p.UserName)
 	if err == sql.ErrNoRows {

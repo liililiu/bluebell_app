@@ -15,6 +15,8 @@ const (
 
 	CodeNeedLogin
 	CodeInvalidToken
+
+	CodeInvalidRow
 )
 
 var codeMsgMap = map[ResCode]string{
@@ -27,6 +29,8 @@ var codeMsgMap = map[ResCode]string{
 
 	CodeNeedLogin:    "需要登录",
 	CodeInvalidToken: "无效token",
+
+	CodeInvalidRow: "没有相关记录",
 }
 
 // Msg 获取code对应的msg的方法
