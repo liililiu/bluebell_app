@@ -15,6 +15,7 @@ var (
 	ErrorUserExist       = errors.New("用户已存在")
 	ErrorUserNotExist    = errors.New("用户不存在")
 	ErrorInvalidPassword = errors.New("密码错误")
+	Errorsql             = errors.New("数据库查询异常")
 )
 
 func CheckUserExist(uname string) error {

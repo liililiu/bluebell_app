@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const TokenExpireDuration = time.Hour * 2
+const TokenExpireDuration = time.Minute * 10
 
 var MySecret = []byte("你不要搞事噢")
 
