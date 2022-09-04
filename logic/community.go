@@ -3,6 +3,7 @@ package logic
 import (
 	"bluebell_app/dao/mysql"
 	"bluebell_app/models"
+	"go.uber.org/zap"
 )
 
 func GetCommunityList() ([]*models.Community, error) {
@@ -43,5 +44,34 @@ func GetPostDetail(id int64) (p *models.ApiPostDb, err error) {
 		User:          user,
 	}
 	return
+
+}
+
+func PostList(page, size int64) (data []*models.ApiPostDb, err error) {
+	// 调用dao层实现，
+
+	data1, err := mysql.PostList(page, size)
+	if err != nil {
+		zap.L().Error("logic.mysql.PostList failed ", zap.Error(err))
+		return nil, err
+	}
+
+	t := make([]*models.ApiPostDb, 0, len(data1))
+	for k, v := range data1 {
+		user, _ := mysql.GetUserByID(v.AuthorID)
+		//if err != nil {
+		//	zap.L().Error("logic.mysql.GetUserByID failed ", zap.Error(err))
+		//	return nil, err
+		//}
+		communityAll, _ := mysql.GetCommunityDeatilByID(v.CommunityID)
+		p := &models.ApiPostDb{
+			CommunityName: communityAll.Name,
+			PostDB:        data1[k],
+			User:          user,
+		}
+		t = append(t, p)
+	}
+
+	return t, nil
 
 }

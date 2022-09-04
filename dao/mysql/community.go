@@ -74,3 +74,16 @@ func GetPostDetail(id int64) (data *models.PostDB, err error) {
 	}
 	return p, nil
 }
+
+// PostList 获取帖子详情列表分页
+func PostList(page, size int64) (data []*models.PostDB, err error) {
+	sqlStr := `select title,context,author_id,community_id,status from post limit ? offset ?`
+	p := make([]*models.PostDB, 0, size)
+	// 注意分页
+	if err := db.Select(&p, sqlStr, size, (page-1)*size); err != nil {
+		zap.L().Error("mysql.PostList.Select failed ", zap.Error(err))
+		return nil, err
+	}
+	return p, nil
+
+}
