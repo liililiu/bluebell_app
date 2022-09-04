@@ -84,3 +84,24 @@ func CreatePost(c *gin.Context) {
 	//返回请求响应
 	ResponseSuccess(c, nil)
 }
+
+// GetPostDetail 获取帖子细节
+func GetPostDetail(c *gin.Context) {
+	//参数处理，从url中获取
+	communityID := c.Param("id")
+	id, err := strconv.ParseInt(communityID, 10, 64)
+	if err != nil {
+		zap.L().Error("GetPostDetail.communityID.ParseInt failed ", zap.Error(err))
+		ResponseError(c, CodeInvalidParam)
+		return
+	}
+	//业务处理
+	data, err := logic.GetPostDetail(id)
+	if err != nil {
+		zap.L().Error(" logic.GetPostDetail failed ", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+	//返回响应
+	ResponseSuccess(c, data)
+}

@@ -58,3 +58,15 @@ func CreatePost(p *models.Post) error {
 	return err
 
 }
+
+func GetPostDetail(id int64) (data *models.PostDB, err error) {
+	p := new(models.PostDB)
+	sqlStr := `select title,context,author_id,community_id,status from post where post_id=?`
+	if err := db.Get(p, sqlStr, id); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrorNoRow
+		}
+		return nil, err
+	}
+	return p, nil
+}
