@@ -21,5 +21,5 @@ func getCurrentUser(c *gin.Context) (userID int64, err error) {
 		err = ErrorUserNotLogin
 		return
 	}
-	return
+	return userID, err
 }

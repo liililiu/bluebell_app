@@ -5,6 +5,7 @@ import (
 	"bluebell_app/models"
 	"bluebell_app/pkg/jwt"
 	sf "bluebell_app/pkg/snowflake"
+	"go.uber.org/zap"
 )
 
 // 存放业务逻辑的代码
@@ -34,9 +35,18 @@ func Login(p *models.ParamLogin) (token string, err error) {
 		UserName: p.Username,
 		PassWord: p.Password,
 	}
+	// 因jwt需要，获取user.userid
+	uid, err := mysql.GetUserID(user.UserName)
+	if err != nil {
+		zap.L().Error("mysql.GetUserID failed ", zap.Error(err))
+		return "", err
+	}
+	user.UserID = uid
 	if err := mysql.Login(user); err != nil {
 		return "", err
 	}
 	//登录成功，签发token
+
 	return jwt.GenToken(user.UserID, user.UserName)
+
 }

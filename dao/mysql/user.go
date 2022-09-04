@@ -59,3 +59,12 @@ func Login(p *models.User) (err error) {
 	}
 	return nil
 }
+
+func GetUserID(username string) (uid int64, err error) {
+	var user models.User
+	sqlStr := `select user_id from user where username=?`
+	if err := db.Get(&user, sqlStr, username); err != nil {
+		return 0, err
+	}
+	return user.UserID, nil
+}

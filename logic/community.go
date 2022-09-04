@@ -13,3 +13,8 @@ func GetCommunityDetail(id int64) (*models.CommunityDetail, error) {
 	//调用dao层来实现
 	return mysql.GetCommunityDeatilByID(id)
 }
+
+func CreatePost(p *models.Post) error {
+	// 调用dao层来实现
+	return mysql.CreatePost(p)
+}

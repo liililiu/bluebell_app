@@ -5,6 +5,8 @@ package controller
 import (
 	"bluebell_app/dao/mysql"
 	"bluebell_app/logic"
+	"bluebell_app/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"strconv"
@@ -50,4 +52,35 @@ func CommunityDetailHandler(c *gin.Context) {
 	}
 	ResponseSuccess(c, data)
 
+}
+
+// CreatePost 创建帖子
+func CreatePost(c *gin.Context) {
+	//获取参数及校验
+	p := new(models.Post)
+	if err := c.ShouldBindJSON(p); err != nil {
+		zap.L().Error("CreatePost.ShouldBindJSON failed ", zap.Error(err))
+		ResponseError(c, CodeInvalidParam)
+		return
+	}
+	//业务处理，调用logic层
+
+	// == 需要获取用户uuid
+	id, err := getCurrentUser(c)
+	if err != nil {
+		return
+	}
+	p.AuthorID = id
+	fmt.Println("##########")
+	fmt.Println(p.AuthorID)
+	fmt.Println("##########")
+
+	// == 传参 进行业务处理
+	if err := logic.CreatePost(p); err != nil {
+		zap.L().Error("logic.CreatePost", zap.Error(err))
+		ResponseError(c, CodeServerBusy)
+		return
+	}
+	//返回请求响应
+	ResponseSuccess(c, nil)
 }
