@@ -91,6 +91,7 @@ func GetPostDetail(c *gin.Context) {
 	communityID := c.Param("id")
 	id, err := strconv.ParseInt(communityID, 10, 64)
 	if err != nil {
+
 		zap.L().Error("GetPostDetail.communityID.ParseInt failed ", zap.Error(err))
 		ResponseError(c, CodeInvalidParam)
 		return
@@ -98,9 +99,15 @@ func GetPostDetail(c *gin.Context) {
 	//业务处理
 	data, err := logic.GetPostDetail(id)
 	if err != nil {
-		zap.L().Error(" logic.GetPostDetail failed ", zap.Error(err))
-		ResponseError(c, CodeServerBusy)
-		return
+		if err == mysql.ErrorNoRow {
+			ResponseError(c, CodeInvalidRow)
+			return
+		} else {
+			zap.L().Error(" logic.GetPostDetail failed ", zap.Error(err))
+			ResponseError(c, CodeServerBusy)
+			return
+		}
+
 	}
 	//返回响应
 	ResponseSuccess(c, data)

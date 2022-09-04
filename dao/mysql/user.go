@@ -68,3 +68,13 @@ func GetUserID(username string) (uid int64, err error) {
 	}
 	return user.UserID, nil
 }
+
+// GetUserByID 根据用户id查询用户名
+func GetUserByID(id int64) (*models.User, error) {
+	p := new(models.User)
+	sqlStr := `select username from user where user_id=?`
+	if err := db.Get(p, sqlStr, id); err != nil {
+		return nil, err
+	}
+	return p, nil
+}

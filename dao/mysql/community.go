@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// GetCommunityList 返回社区名称列表
 func GetCommunityList() (data []*models.Community, err error) {
 	var community []*models.Community
 	sqlStr := `select community_id ,community_name from community`
@@ -24,6 +25,7 @@ func GetCommunityList() (data []*models.Community, err error) {
 	return community, nil
 }
 
+// GetCommunityDeatilByID 返回社区所有信息详情
 func GetCommunityDeatilByID(id int64) (data *models.CommunityDetail, err error) {
 	details := new(models.CommunityDetail)
 	sqlStr := `select community_id,community_name,introduction,create_time from community where community_id =?`
@@ -37,6 +39,7 @@ func GetCommunityDeatilByID(id int64) (data *models.CommunityDetail, err error) 
 	return details, nil
 }
 
+// CreatePost 创建帖子
 func CreatePost(p *models.Post) error {
 	//生成uuid
 	id := sf.GenID()
@@ -59,6 +62,7 @@ func CreatePost(p *models.Post) error {
 
 }
 
+// GetPostDetail 获取帖子详情
 func GetPostDetail(id int64) (data *models.PostDB, err error) {
 	p := new(models.PostDB)
 	sqlStr := `select title,context,author_id,community_id,status from post where post_id=?`

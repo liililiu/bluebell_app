@@ -13,3 +13,9 @@ type PostDB struct {
 	Status      int32     `json:"status" db:"status"`
 	CreateTime  time.Time `json:"create_time" db:"create_time"`
 }
+
+type ApiPostDb struct {
+	CommunityName string `json:"community_name"`
+	*PostDB
+	*User `json:"user"` // 给前端返回的数据分层
+}
