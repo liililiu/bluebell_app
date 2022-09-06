@@ -17,6 +17,10 @@ func SetupRouter() *gin.Engine {
 	// 注册业务路由
 	v1.POST("/signup", controller.SignUpHandler)
 	v1.POST("/login", controller.LoginHandler)
+	v1.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong!")
+
+	})
 	v1.Use(middlewares.JWTAuthMiddleware())
 	{
 		v1.GET("/community", controller.CommunityHandler)

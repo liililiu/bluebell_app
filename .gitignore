@@ -9,6 +9,7 @@ gen
 1
 sql
 log
+tmp
 *.log
 *.txt
 *.sql
