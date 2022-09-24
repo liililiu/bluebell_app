@@ -27,3 +27,11 @@ type Post struct {
 	Title       string `json:"title" binding:"required"`
 	Context     string `json:"context" binding:"required"`
 }
+
+// 投票数据
+
+type ParamVoteData struct {
+	// UserID  //用户id
+	PostID    int64 `json:"post_id,string" binding:"required" `                //帖子id
+	Direction int8  `json:"direction,string" binding:"required,oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0
+}

@@ -28,6 +28,8 @@ func SetupRouter() *gin.Engine {
 		v1.POST("/post", controller.CreatePost)
 		v1.GET("/post/:id", controller.GetPostDetail)
 		v1.GET("/post", controller.PostList)
+		//投票
+		v1.POST("/vote", controller.PostVoteController)
 	}
 
 	r.NoRoute(func(c *gin.Context) {
