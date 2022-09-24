@@ -13,19 +13,20 @@ log:
   logInConsole: true
 
 mysql:
-  host: "192.168.32.2"
-  port: 3306
+  host: "8.218.58.79"
+  port: 50633
   user: "root"
-  password: "baifendian"
+  password: "742247141d598baba7940f05a93ef456"
   dbname: "bluebell"
   max_open_connects: 200
   max_idle_connects: 50
 
 
+
 redis:
-  host: "192.168.32.2"
+  host: "96.45.170.200"
   port: 6379
-  password: "baifendian"
+  password: "742247141d598baba7940f05a93ef456"
   dbname: 0
   pool_size: 100
 

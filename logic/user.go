@@ -30,7 +30,7 @@ func Signup(p *models.ParamSignUp) (err error) {
 	return mysql.InsertUser(user)
 }
 
-func Login(p *models.ParamLogin) (token string, err error) {
+func Login(p *models.ParamLogin) (u *models.User, err error) {
 	user := &models.User{
 		UserName: p.Username,
 		PassWord: p.Password,
@@ -39,14 +39,18 @@ func Login(p *models.ParamLogin) (token string, err error) {
 	uid, err := mysql.GetUserID(user.UserName)
 	if err != nil {
 		zap.L().Error("mysql.GetUserID failed ", zap.Error(err))
-		return "", err
+		return
 	}
 	user.UserID = uid
 	if err := mysql.Login(user); err != nil {
-		return "", err
+		return
 	}
 	//登录成功，签发token
 
-	return jwt.GenToken(user.UserID, user.UserName)
-
+	token, err := jwt.GenToken(user.UserID, user.UserName)
+	if err != nil {
+		return
+	}
+	user.Token = token
+	return
 }
