@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"bluebell_app/models"
-	sf "bluebell_app/pkg/snowflake"
 	"database/sql"
 	"go.uber.org/zap"
 	"strconv"
@@ -41,11 +40,9 @@ func GetCommunityDeatilByID(id int64) (data *models.CommunityDetail, err error) 
 
 // CreatePost 创建帖子
 func CreatePost(p *models.Post) error {
-	//生成uuid
-	id := sf.GenID()
 	communityID, _ := strconv.ParseInt(p.CommunityID, 10, 64)
 	dbP := models.PostDB{
-		Id:          id,
+		Id:          p.ID,
 		AuthorID:    p.AuthorID,
 		CommunityID: communityID,
 		Title:       p.Title,

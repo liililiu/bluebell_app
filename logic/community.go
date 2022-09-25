@@ -2,7 +2,9 @@ package logic
 
 import (
 	"bluebell_app/dao/mysql"
+	"bluebell_app/dao/redis"
 	"bluebell_app/models"
+	sf "bluebell_app/pkg/snowflake"
 	"go.uber.org/zap"
 )
 
@@ -18,8 +20,14 @@ func GetCommunityDetail(id int64) (*models.CommunityDetail, error) {
 }
 
 func CreatePost(p *models.Post) error {
+	p.ID = sf.GenID()
 	// 调用dao层来实现
-	return mysql.CreatePost(p)
+	err := mysql.CreatePost(p)
+	if err != nil {
+		return err
+	}
+	redis.CreatePostTime(p.ID)
+	return err
 }
 
 // 获取帖子详情

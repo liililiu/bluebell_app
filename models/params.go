@@ -21,7 +21,7 @@ type ParamLogin struct {
 // 创建帖子请求参数
 
 type Post struct {
-	//ID int64 `json:"ID" binding:"required"`
+	ID          int64  `json:"ID" `
 	AuthorID    int64  `json:"author_id" `
 	CommunityID string `json:"community_id" binding:"required"`
 	Title       string `json:"title" binding:"required"`
@@ -32,6 +32,6 @@ type Post struct {
 
 type ParamVoteData struct {
 	// UserID  //用户id
-	PostID    int64 `json:"post_id,string" binding:"required" `                //帖子id
-	Direction int8  `json:"direction,string" binding:"required,oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0
+	PostID    string `json:"post_id" binding:"required" `                       //帖子id
+	Direction int8   `json:"direction,string" binding:"oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0
 }

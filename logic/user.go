@@ -42,8 +42,8 @@ func Login(p *models.ParamLogin) (u *models.User, err error) {
 		return
 	}
 	user.UserID = uid
-	if err := mysql.Login(user); err != nil {
-		return nil, err
+	if err = mysql.Login(user); err != nil {
+		return
 	}
 	//登录成功，签发token
 
@@ -52,5 +52,5 @@ func Login(p *models.ParamLogin) (u *models.User, err error) {
 		return
 	}
 	user.Token = token
-	return
+	return user, err
 }

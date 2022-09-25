@@ -16,7 +16,7 @@ import (
 type ResponseData struct {
 	Code ResCode     `json:"code"`
 	Msg  interface{} `json:"msg"`
-	Data interface{} `json:"data"`
+	Data interface{} `json:"data,omitempty"` //omitempty  当字段为空时就不返回
 }
 
 // 返回错误信息；返回状态码
