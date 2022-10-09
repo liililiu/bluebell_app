@@ -74,7 +74,7 @@ func GetPostDetail(id int64) (data *models.PostDB, err error) {
 
 // PostList 获取帖子详情列表分页
 func PostList(page, size int64) (data []*models.PostDB, err error) {
-	sqlStr := `select title,context,author_id,community_id,status from post limit ? offset ?`
+	sqlStr := `select title,context,author_id,community_id,status from post order by create_time desc limit ? offset ?`
 	p := make([]*models.PostDB, 0, size)
 	// 注意分页
 	if err := db.Select(&p, sqlStr, size, (page-1)*size); err != nil {

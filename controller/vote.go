@@ -12,6 +12,7 @@ func PostVoteController(c *gin.Context) {
 	// 参数校验
 	p := new(models.ParamVoteData)
 	if err := c.ShouldBindJSON(p); err != nil {
+		zap.L().Error("err:", zap.Error(err))
 		errs, ok := err.(validator.ValidationErrors) // 类型断言
 		if !ok {
 			ResponseError(c, CodeInvalidParam)
@@ -26,6 +27,7 @@ func PostVoteController(c *gin.Context) {
 	uid, err := getCurrentUser(c)
 	if err != nil {
 		ResponseError(c, CodeNeedLogin)
+		return
 	}
 	// 处理请求
 	if err := logic.VoteForPost(uid, p); err != nil {

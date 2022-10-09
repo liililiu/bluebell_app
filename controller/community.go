@@ -113,7 +113,30 @@ func GetPostDetail(c *gin.Context) {
 	ResponseSuccess(c, data)
 }
 
+// PostList 帖子创建时倒序返回
 func PostList(c *gin.Context) {
+	//处理请求参数
+	//== 分页直接封装起来
+	page, size, _ := getPageInfo(c)
+	//业务处理
+	data, err := logic.PostList(page, size)
+	if err != nil {
+		if err == mysql.ErrorNoRow {
+			ResponseError(c, CodeInvalidRow)
+			return
+		} else {
+			zap.L().Error(" logic.PostList failed ", zap.Error(err))
+			ResponseError(c, CodeServerBusy)
+			return
+		}
+
+	}
+	//返回响应
+	ResponseSuccess(c, data)
+}
+
+// PostList2 可选时间顺序或者投票顺序返回
+func PostList2(c *gin.Context) {
 	//处理请求参数
 	//== 分页直接封装起来
 	page, size, _ := getPageInfo(c)

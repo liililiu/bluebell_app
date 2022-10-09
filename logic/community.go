@@ -26,6 +26,7 @@ func CreatePost(p *models.Post) error {
 	if err != nil {
 		return err
 	}
+	//为帖子投票时，需查询是否已过投票时间
 	redis.CreatePostTime(p.ID)
 	return err
 }

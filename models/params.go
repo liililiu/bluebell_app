@@ -31,7 +31,7 @@ type Post struct {
 // 投票数据
 
 type ParamVoteData struct {
-	// UserID  //用户id
+	// UserID  //用户id(从请求中获取)
 	PostID    string `json:"post_id" binding:"required" `                       //帖子id
-	Direction int8   `json:"direction,string" binding:"oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0
+	Direction int8   `json:"direction,number" binding:"required,oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0
 }
