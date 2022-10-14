@@ -32,6 +32,14 @@ type Post struct {
 
 type ParamVoteData struct {
 	// UserID  //用户id(从请求中获取)
-	PostID    string `json:"post_id" binding:"required" `                       //帖子id
-	Direction int8   `json:"direction,number" binding:"required,oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0
+	PostID    string `json:"post_id" binding:"required" `              //帖子id
+	Direction int8   `json:"direction,number" binding:"oneof=1 -1 0" ` // 赞成票1还是反对票-1取消投票0;这里不能填写required,与验证库有关，int8默认零值
+}
+
+//ParamPostList 获取帖子列表query string参数
+type ParamPostList struct {
+	Page int64 `form:"page"`
+	Size int64 `form:"size"`
+	// order值time or score
+	Order string `form:"order"`
 }

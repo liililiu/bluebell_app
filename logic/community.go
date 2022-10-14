@@ -84,3 +84,33 @@ func PostList(page, size int64) (data []*models.ApiPostDb, err error) {
 	return t, nil
 
 }
+
+func PostList2(p *models.ParamPostList) (data []*models.ApiPostDb, err error) {
+	//去redis查询帖子id
+	ids := redis.GetPostIDsInOrder(p)
+
+	//去mysql查询帖子数据并返回
+	// 返回的数据要是传进去的ids的数据
+	posts, err := mysql.GetPostListByIDs(ids)
+	if err != nil {
+		return
+	}
+	// 将帖子的作者信息及社区信息填充到返回信息中
+	t := make([]*models.ApiPostDb, 0, len(posts))
+	for k, v := range posts {
+		user, _ := mysql.GetUserByID(v.AuthorID)
+		//if err != nil {
+		//	zap.L().Error("logic.mysql.GetUserByID failed ", zap.Error(err))
+		//	return nil, err
+		//}
+		communityAll, _ := mysql.GetCommunityDeatilByID(v.CommunityID)
+		p := &models.ApiPostDb{
+			CommunityName: communityAll.Name,
+			PostDB:        posts[k],
+			User:          user,
+		}
+		t = append(t, p)
+	}
+	return t, nil
+
+}

@@ -30,6 +30,7 @@ func PostVoteController(c *gin.Context) {
 		return
 	}
 	// 处理请求
+	// 两个参数,哪个用户给哪个帖子投了什么票
 	if err := logic.VoteForPost(uid, p); err != nil {
 		zap.L().Error("logic.VoteForPost failed,", zap.Error(err))
 		ResponseError(c, CodeServerBusy)

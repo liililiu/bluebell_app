@@ -32,6 +32,7 @@ import (
 
 // VoteForPost 为帖子投票的函数
 func VoteForPost(userID int64, p *models.ParamVoteData) error {
+	// 执行记录投票三要素信息
 	zap.L().Debug("VoteForPost",
 		zap.Int64("userID", userID),
 		zap.String("postID", p.PostID),

@@ -3,8 +3,10 @@ package mysql
 import (
 	"bluebell_app/models"
 	"database/sql"
+	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 	"strconv"
+	"strings"
 )
 
 // GetCommunityList 返回社区名称列表
@@ -82,5 +84,21 @@ func PostList(page, size int64) (data []*models.PostDB, err error) {
 		return nil, err
 	}
 	return p, nil
+
+}
+
+//GetPostListByIDs 根据给定的id列表查询帖子数据
+func GetPostListByIDs(ids []string) (postList []*models.PostDB, err error) {
+	sqlStr := `select post_id,title,context,author_id,community_id,create_time from post 
+    		where post_id in (?)
+    		order by FIND_IN_SET(post_id,?)`
+	query, args, err := sqlx.In(sqlStr, ids, strings.Join(ids, ","))
+	if err != nil {
+		zap.L().Error("sqlx.In(sqlStr, ids) failed : ", zap.Error(err))
+		return nil, err
+	}
+	query = db.Rebind(query)
+	err = db.Select(&postList, query, args...) //注意写法
+	return
 
 }

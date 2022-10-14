@@ -4,6 +4,7 @@ import "time"
 
 // 内存对齐，同类型的字段放邻近位置
 
+//PostDB 帖子信息
 type PostDB struct {
 	Id          int64     `json:"id" db:"post_id"`
 	AuthorID    int64     `json:"author_id" db:"author_id"`
@@ -14,6 +15,7 @@ type PostDB struct {
 	CreateTime  time.Time `json:"create_time" db:"create_time"`
 }
 
+// ApiPostDb 返回前端更详细的信息
 type ApiPostDb struct {
 	CommunityName string `json:"community_name"`
 	*PostDB

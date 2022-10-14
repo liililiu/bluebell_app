@@ -42,6 +42,8 @@ func VoteForPost(userID, postID string, value float64) error {
 	//先查当前用户对当前帖子之前的投票纪录
 	// ov代表之前投的票的数值 1 -1 0
 	ov := Rdb.ZScore(GetRedisKey(KeyPostVotedPrefix+postID), userID).Val()
+
+	// 因为值只能为1 -1 0;这里的 例如 (-1)-(-1)=0 就决定了不能无限制投票
 	var dir float64
 	if value > ov {
 		dir = 1
@@ -51,7 +53,7 @@ func VoteForPost(userID, postID string, value float64) error {
 	diff := math.Abs(ov - value) //计算两次投票的插值
 
 	pipeline := Rdb.TxPipeline()
-	// 更新分数
+	// 更新分数,注意dir的正负取值
 	pipeline.ZIncrBy(GetRedisKey(KeyPostScore), dir*diff*scorePerVote, postID)
 
 	//3 记录用户为该帖子投票的数据
