@@ -88,6 +88,8 @@ func PostList(page, size int64) (data []*models.ApiPostDb, err error) {
 func PostList2(p *models.ParamPostList) (data []*models.ApiPostDb, err error) {
 	//去redis查询帖子id
 	ids := redis.GetPostIDsInOrder(p)
+	// 查询对应帖子的投票数据
+	yesNum, noNum := redis.GetVoteNum(ids)
 
 	//去mysql查询帖子数据并返回
 	// 返回的数据要是传进去的ids的数据
@@ -99,15 +101,14 @@ func PostList2(p *models.ParamPostList) (data []*models.ApiPostDb, err error) {
 	t := make([]*models.ApiPostDb, 0, len(posts))
 	for k, v := range posts {
 		user, _ := mysql.GetUserByID(v.AuthorID)
-		//if err != nil {
-		//	zap.L().Error("logic.mysql.GetUserByID failed ", zap.Error(err))
-		//	return nil, err
-		//}
+
 		communityAll, _ := mysql.GetCommunityDeatilByID(v.CommunityID)
 		p := &models.ApiPostDb{
 			CommunityName: communityAll.Name,
 			PostDB:        posts[k],
 			User:          user,
+			VoteYesNum:    yesNum[k],
+			VoteNoNum:     noNum[k],
 		}
 		t = append(t, p)
 	}

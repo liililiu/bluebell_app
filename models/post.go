@@ -18,6 +18,8 @@ type PostDB struct {
 // ApiPostDb 返回前端更详细的信息
 type ApiPostDb struct {
 	CommunityName string `json:"community_name"`
+	VoteYesNum    int64  `json:"vote_yes_num"`
+	VoteNoNum     int64  `json:"vote_no_num"`
 	*PostDB
 	*User `json:"user"` // 给前端返回的数据分层
 }
