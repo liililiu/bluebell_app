@@ -19,7 +19,15 @@ import (
 	"time"
 )
 
-//GoWeb开发通用脚手架
+// @title GoWeb项目
+// @version 1.0
+// @description Gin+Mysql+Redis快速入门GoWeb开发
+
+// @contact.name liililiu
+// @contact.url https://llbowen.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 func main() {
 	//1.加载配置

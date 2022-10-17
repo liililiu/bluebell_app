@@ -13,21 +13,13 @@ import (
 }
 */
 
+//ResponseData 响应结构体
 type ResponseData struct {
 	Code ResCode     `json:"code"`
 	Msg  interface{} `json:"msg"`
-	Data interface{} `json:"data,omitempty"` //omitempty  当字段为空时就不返回
-}
-
-// 返回错误信息；返回状态码
-
-func ResponseError(c *gin.Context, code ResCode) {
-	c.JSON(http.StatusOK, &ResponseData{
-		Code: code,
-		Msg:  code.Msg(),
-		Data: nil,
-	})
-
+	//omitempty  当字段为空时就不返回
+	Data interface{} `json:"data,omitempty"`
+	//Data interface{} `json:"data"`
 }
 
 // 返回正确信息；返回数据
@@ -40,8 +32,41 @@ func ResponseSuccess(c *gin.Context, data interface{}) {
 	})
 }
 
-// 返回自定义信息；返回msg
+// 返回错误信息；返回状态码
 
+func Response500(c *gin.Context, code ResCode) {
+	c.JSON(http.StatusInternalServerError, &ResponseData{
+		Code: code,
+		Msg:  code.Msg(),
+		Data: nil,
+	})
+}
+
+func Response400(c *gin.Context, code ResCode) {
+	c.JSON(http.StatusInternalServerError, &ResponseData{
+		Code: code,
+		Msg:  code.Msg(),
+		Data: nil,
+	})
+}
+
+func Response401(c *gin.Context, code ResCode) {
+	c.JSON(http.StatusInternalServerError, &ResponseData{
+		Code: code,
+		Msg:  code.Msg(),
+		Data: nil,
+	})
+}
+
+func Response403(c *gin.Context, code ResCode) {
+	c.JSON(http.StatusInternalServerError, &ResponseData{
+		Code: code,
+		Msg:  code.Msg(),
+		Data: nil,
+	})
+}
+
+// ResponseSuccessWithMsg 上述返回消息不能满足时，返回自定义信息
 func ResponseSuccessWithMsg(c *gin.Context, code ResCode, msg interface{}) {
 	c.JSON(http.StatusOK, &ResponseData{
 		Code: code,
@@ -50,8 +75,9 @@ func ResponseSuccessWithMsg(c *gin.Context, code ResCode, msg interface{}) {
 	})
 }
 
+// ResponseErrorWithMsg 上述返回消息会满足时，返回自定义信息
 func ResponseErrorWithMsg(c *gin.Context, code ResCode, msg interface{}) {
-	c.JSON(http.StatusOK, &ResponseData{
+	c.JSON(http.StatusInternalServerError, &ResponseData{
 		Code: code,
 		Msg:  msg,
 		Data: nil,

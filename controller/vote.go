@@ -15,7 +15,7 @@ func PostVoteController(c *gin.Context) {
 		zap.L().Error("err:", zap.Error(err))
 		errs, ok := err.(validator.ValidationErrors) // 类型断言
 		if !ok {
-			ResponseError(c, CodeInvalidParam)
+			Response400(c, CodeInvalidParam)
 			return
 		}
 		errData := removeTopStruct(errs.Translate(trans))
@@ -26,14 +26,14 @@ func PostVoteController(c *gin.Context) {
 	//获取当前用户id
 	uid, err := getCurrentUser(c)
 	if err != nil {
-		ResponseError(c, CodeNeedLogin)
+		Response401(c, CodeNeedLogin)
 		return
 	}
 	// 处理请求
 	// 两个参数,哪个用户给哪个帖子投了什么票
 	if err := logic.VoteForPost(uid, p); err != nil {
 		zap.L().Error("logic.VoteForPost failed,", zap.Error(err))
-		ResponseError(c, CodeServerBusy)
+		Response500(c, CodeServerBusy)
 		return
 	}
 	// 返回响应

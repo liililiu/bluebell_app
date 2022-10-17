@@ -32,13 +32,13 @@ func getPageInfo(c *gin.Context) (int64, int64, error) {
 	page, err := strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
 		zap.L().Error("PostList.pageStr failed ", zap.Error(err))
-		ResponseError(c, CodeInvalidParam)
+		Response400(c, CodeInvalidParam)
 		return 0, 0, err
 	}
 	size, err := strconv.ParseInt(sizeStr, 10, 64)
 	if err != nil {
 		zap.L().Error("PostList.pageStr failed ", zap.Error(err))
-		ResponseError(c, CodeInvalidParam)
+		Response400(c, CodeInvalidParam)
 		return 0, 0, err
 
 	}

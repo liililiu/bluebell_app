@@ -2,19 +2,24 @@ package routes
 
 import (
 	"bluebell_app/controller"
+	docs "bluebell_app/docs"
 	"bluebell_app/logger"
 	"bluebell_app/middlewares"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"net/http"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
-
-	v1 := r.Group("/api/v1")
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 注册业务路由
+	v1 := r.Group("/api/v1")
 	v1.POST("/signup", controller.SignUpHandler)
 	v1.POST("/login", controller.LoginHandler)
 	v1.GET("/ping", func(c *gin.Context) {

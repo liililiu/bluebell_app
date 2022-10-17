@@ -16,14 +16,25 @@ const (
 	orderScore = "score"
 )
 
-// CommunityHandler获取社区名称列表
-
+// CommunityHandler 获取社区名称列表
+// @Summary 获取社区名称
+// @Description 获取社区名称
+// @Tags 社区相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 令牌"
+// @Security ApiKeyAuth
+// @Success 200 {object} []models.Community
+// @Failure 401  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /community [get]
 func CommunityHandler(c *gin.Context) {
 	//获取所有的社区相关的id以及name
 	data, err := logic.GetCommunityList()
 	if err != nil {
 		zap.L().Error("logic.GetCommunityList() failed, ", zap.Error(err))
-		ResponseError(c, CodeServerBusy)
+		//Response500(c, CodeServerBusy)
+		Response500(c, CodeServerBusy)
 		return
 	}
 	ResponseSuccess(c, data)
@@ -31,14 +42,27 @@ func CommunityHandler(c *gin.Context) {
 }
 
 // CommunityDetailHandler 获取社区详情
-
+// @Summary 获取社区详情
+// @Description 获取指定id社区详情内容
+// @Tags 社区相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 令牌"
+// @Param id path string true "社区id"
+// @Security ApiKeyAuth
+// @Success 200 {object}   models.CommunityDetail
+// @Failure 401  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /community/{id} [get]
 func CommunityDetailHandler(c *gin.Context) {
 	//根据id来实现；解析参数，拿到id
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		zap.L().Error("用户请求id参数错误：strconv.ParseInt failed,", zap.Error(err))
-		ResponseError(c, CodeServerBusy)
+		//Response500(c, CodeServerBusy)
+		Response500(c, CodeServerBusy)
+
 		return
 	}
 
@@ -47,11 +71,11 @@ func CommunityDetailHandler(c *gin.Context) {
 	if err != nil {
 		if err == mysql.ErrorNoRow {
 			zap.L().Warn("用户所查找的社区id不存在", zap.Int64("id值：", id))
-			ResponseError(c, CodeInvalidRow)
+			Response400(c, CodeInvalidRow)
 			return
 		}
 		zap.L().Error("logic.GetCommunityDetail failed,", zap.Error(err))
-		ResponseError(c, CodeServerBusy)
+		Response500(c, CodeServerBusy)
 		return
 	}
 	ResponseSuccess(c, data)
@@ -59,12 +83,24 @@ func CommunityDetailHandler(c *gin.Context) {
 }
 
 // CreatePost 创建帖子
+// @Summary 创建帖子
+// @Description 创建帖子
+// @Tags 帖子相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 令牌"
+// @Param ID body int false "帖子id"
+// @Security ApiKeyAuth
+// @Success 200 {object}   models.CommunityDetail
+// @Failure 401  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /community/{id} [get]
 func CreatePost(c *gin.Context) {
 	//获取参数及校验
 	p := new(models.Post)
 	if err := c.ShouldBindJSON(p); err != nil {
 		zap.L().Error("CreatePost.ShouldBindJSON failed ", zap.Error(err))
-		ResponseError(c, CodeInvalidParam)
+		Response400(c, CodeInvalidParam)
 		return
 	}
 	//业务处理，调用logic层
@@ -79,7 +115,7 @@ func CreatePost(c *gin.Context) {
 	// == 传参 进行业务处理
 	if err := logic.CreatePost(p); err != nil {
 		zap.L().Error("logic.CreatePost", zap.Error(err))
-		ResponseError(c, CodeServerBusy)
+		Response500(c, CodeServerBusy)
 		return
 	}
 	//返回请求响应
@@ -94,18 +130,18 @@ func GetPostDetail(c *gin.Context) {
 	if err != nil {
 
 		zap.L().Error("GetPostDetail.communityID.ParseInt failed ", zap.Error(err))
-		ResponseError(c, CodeInvalidParam)
+		Response400(c, CodeInvalidParam)
 		return
 	}
 	//业务处理
 	data, err := logic.GetPostDetail(id)
 	if err != nil {
 		if err == mysql.ErrorNoRow {
-			ResponseError(c, CodeInvalidRow)
+			Response400(c, CodeInvalidRow)
 			return
 		} else {
 			zap.L().Error(" logic.GetPostDetail failed ", zap.Error(err))
-			ResponseError(c, CodeServerBusy)
+			Response500(c, CodeServerBusy)
 			return
 		}
 
@@ -123,11 +159,11 @@ func PostList(c *gin.Context) {
 	data, err := logic.PostList(page, size)
 	if err != nil {
 		if err == mysql.ErrorNoRow {
-			ResponseError(c, CodeInvalidRow)
+			Response400(c, CodeInvalidRow)
 			return
 		} else {
 			zap.L().Error(" logic.PostList failed ", zap.Error(err))
-			ResponseError(c, CodeServerBusy)
+			Response500(c, CodeServerBusy)
 			return
 		}
 
@@ -152,7 +188,7 @@ func PostList2(c *gin.Context) {
 
 	if err := c.ShouldBindQuery(&p); err != nil {
 		zap.L().Error("PostList2.ShouldBindQuery failed;", zap.Error(err))
-		ResponseError(c, CodeInvalidParam)
+		Response400(c, CodeInvalidParam)
 		return
 	}
 
@@ -160,11 +196,11 @@ func PostList2(c *gin.Context) {
 	data, err := logic.PostList2(&p)
 	if err != nil {
 		if err == mysql.ErrorNoRow {
-			ResponseError(c, CodeInvalidRow)
+			Response400(c, CodeInvalidRow)
 			return
 		} else {
 			zap.L().Error(" logic.PostList failed ", zap.Error(err))
-			ResponseError(c, CodeServerBusy)
+			Response500(c, CodeServerBusy)
 			return
 		}
 

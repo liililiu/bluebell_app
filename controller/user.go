@@ -26,7 +26,7 @@ func SignUpHandler(c *gin.Context) {
 		// 判断err是否是validator.ValidationErrors类型
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
-			ResponseError(c, CodeInvalidParam)
+			Response400(c, CodeInvalidParam)
 			//c.JSON(http.StatusOK, gin.H{
 			//	// 非validator.ValidationErrors类型错误直接返回
 			//	"msg": err.Error(),
@@ -54,10 +54,10 @@ func SignUpHandler(c *gin.Context) {
 	if err := logic.Signup(p); err != nil {
 		zap.L().Error("logic.Signup failed", zap.Error(err)) //打印日志
 		if errors.Is(err, mysql.ErrorUserExist) {
-			ResponseError(c, CodeUserExist)
+			Response500(c, CodeUserExist)
 			return
 		}
-		ResponseError(c, CodeServerBusy)
+		Response500(c, CodeServerBusy)
 		return
 	}
 	// 3.返回数据
@@ -73,7 +73,7 @@ func LoginHandler(c *gin.Context) {
 		// 判断err是否是validator.ValidationErrors类型
 		errs, ok := err.(validator.ValidationErrors)
 		if !ok {
-			ResponseError(c, CodeInvalidParam)
+			Response400(c, CodeInvalidParam)
 			// 采用上述封装后的错误码替代
 			//c.JSON(http.StatusOK, gin.H{
 			//	// 非validator.ValidationErrors类型错误直接返回
@@ -94,10 +94,10 @@ func LoginHandler(c *gin.Context) {
 	if err != nil {
 		zap.L().Error("logic.Login failed", zap.String("username", p.Username), zap.Error(err)) //打印日志
 		if err == mysql.ErrorUserExist {
-			ResponseError(c, CodeUserExist)
+			Response500(c, CodeUserExist)
 			return
 		}
-		ResponseError(c, CodeInvalidPassword)
+		Response400(c, CodeInvalidPassword)
 		return
 	}
 	//3.返回响应
