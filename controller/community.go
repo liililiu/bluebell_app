@@ -89,12 +89,12 @@ func CommunityDetailHandler(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param Authorization header string true "Bearer 令牌"
-// @Param ID body int false "帖子id"
+// @Param models.Post body models.Post true "创建帖子参数"
 // @Security ApiKeyAuth
-// @Success 200 {object}   models.CommunityDetail
+// @Success 200 {object}   nil
 // @Failure 401  {object}  ResponseData
 // @Failure 500  {object}  ResponseData
-// @Router /community/{id} [get]
+// @Router /post [post]
 func CreatePost(c *gin.Context) {
 	//获取参数及校验
 	p := new(models.Post)
@@ -122,7 +122,19 @@ func CreatePost(c *gin.Context) {
 	ResponseSuccess(c, nil)
 }
 
-// GetPostDetail 获取帖子细节
+// GetPostDetail
+// @Summary 帖子详情
+// @Description 获取帖子详情接口
+// @Tags 帖子相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 令牌"
+// @Param id path string true "帖子ID"
+// @Success 200 {object}   ResponseData
+// @Failure 400  {object}  ResponseData
+// @Failure 401  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /post/{id} [get]
 func GetPostDetail(c *gin.Context) {
 	//参数处理，从url中获取
 	communityID := c.Param("id")
@@ -150,34 +162,28 @@ func GetPostDetail(c *gin.Context) {
 	ResponseSuccess(c, data)
 }
 
-// PostList 帖子创建时倒序返回
-func PostList(c *gin.Context) {
-	//处理请求参数
-	//== 分页直接封装起来
-	page, size, _ := getPageInfo(c)
-	//业务处理
-	data, err := logic.PostList(page, size)
-	if err != nil {
-		if err == mysql.ErrorNoRow {
-			Response400(c, CodeInvalidRow)
-			return
-		} else {
-			zap.L().Error(" logic.PostList failed ", zap.Error(err))
-			Response500(c, CodeServerBusy)
-			return
-		}
-
-	}
-	//返回响应
-	ResponseSuccess(c, data)
-}
-
-// PostList2 可选时间顺序或者投票顺序返回；从redis获取排序信息
+// PostList 可选时间顺序或者投票顺序返回；从redis获取排序信息
 // 根据前端传来的参数动态的获取帖子列表(创建时间、或分数)
 //1.获取参数
 //2.去redis查询id列表
 //3.根据id去数据库查询帖子详细信息
-func PostList2(c *gin.Context) {
+
+// PostList
+// @Summary 帖子列表
+// @Description 根据时间新旧或票赞数高低返回帖子列表
+// @Tags 帖子相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 令牌"
+// @Param page query int true "页数"
+// @Param size query int true "页尺寸"
+// @Param order query string false "页尺寸"
+// @Success 200  {object}   ResponseData
+// @Failure 400  {object}  ResponseData
+// @Failure 401  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /post [get]
+func PostList(c *gin.Context) {
 	// 处理请求参数
 	// 默认值
 	p := models.ParamPostList{

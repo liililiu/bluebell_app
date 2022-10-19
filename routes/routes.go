@@ -32,10 +32,9 @@ func SetupRouter() *gin.Engine {
 		v1.GET("/community/:id", controller.CommunityDetailHandler)
 		v1.POST("/post", controller.CreatePost)
 		v1.GET("/post/:id", controller.GetPostDetail)
-		//单纯的按照帖子从新到旧返回
-		v1.GET("/post", controller.PostList)
+
 		//可以按照时间顺序或者投票顺序返回
-		v1.GET("/post2", controller.PostList2)
+		v1.GET("/post", controller.PostList)
 		//投票
 		v1.POST("/vote", controller.PostVoteController)
 	}

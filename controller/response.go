@@ -43,7 +43,7 @@ func Response500(c *gin.Context, code ResCode) {
 }
 
 func Response400(c *gin.Context, code ResCode) {
-	c.JSON(http.StatusInternalServerError, &ResponseData{
+	c.JSON(http.StatusBadRequest, &ResponseData{
 		Code: code,
 		Msg:  code.Msg(),
 		Data: nil,
@@ -51,7 +51,7 @@ func Response400(c *gin.Context, code ResCode) {
 }
 
 func Response401(c *gin.Context, code ResCode) {
-	c.JSON(http.StatusInternalServerError, &ResponseData{
+	c.JSON(http.StatusUnauthorized, &ResponseData{
 		Code: code,
 		Msg:  code.Msg(),
 		Data: nil,
@@ -59,7 +59,7 @@ func Response401(c *gin.Context, code ResCode) {
 }
 
 func Response403(c *gin.Context, code ResCode) {
-	c.JSON(http.StatusInternalServerError, &ResponseData{
+	c.JSON(http.StatusForbidden, &ResponseData{
 		Code: code,
 		Msg:  code.Msg(),
 		Data: nil,

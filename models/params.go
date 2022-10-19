@@ -38,8 +38,8 @@ type ParamVoteData struct {
 
 //ParamPostList 获取帖子列表query string参数
 type ParamPostList struct {
-	Page int64 `form:"page"`
-	Size int64 `form:"size"`
+	Page int64 `form:"page" binding:"required"`
+	Size int64 `form:"size" binding:"required"`
 	// order值time or score
 	Order string `form:"order"`
 }

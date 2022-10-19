@@ -14,6 +14,17 @@ import (
 // 2 业务处理
 // 3 返回相应
 
+// SignUpHandler
+// @Summary 注册接口
+// @Description 用户注册
+// @Tags 用户相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param models.ParamSignUp body models.ParamSignUp true "注册参数"
+// @Success 200 {object}   ResponseData
+// @Failure 400  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /signup [post]
 func SignUpHandler(c *gin.Context) {
 	// 1.获取参数校验
 	p := new(models.ParamSignUp)
@@ -64,6 +75,17 @@ func SignUpHandler(c *gin.Context) {
 	ResponseSuccess(c, nil)
 }
 
+// LoginHandler
+// @Summary 登录接口
+// @Description 用户登录
+// @Tags 用户相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param models.ParamLogin body models.ParamLogin true "登录参数"
+// @Success 200 {object}   ResponseData
+// @Failure 400  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /login [post]
 func LoginHandler(c *gin.Context) {
 	//1.参数校验(这一块可直接复用)
 	p := new(models.ParamLogin)

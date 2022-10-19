@@ -8,6 +8,19 @@ import (
 	"go.uber.org/zap"
 )
 
+// PostVoteController
+// @Summary 投票接口
+// @Description 投票接口
+// @Tags 帖子相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 令牌"
+// @Param models.ParamVoteData body models.ParamVoteData true "投票参数"
+// @Success 200 {object}   ResponseData
+// @Failure 400  {object}  ResponseData
+// @Failure 401  {object}  ResponseData
+// @Failure 500  {object}  ResponseData
+// @Router /vote [post]
 func PostVoteController(c *gin.Context) {
 	// 参数校验
 	p := new(models.ParamVoteData)
