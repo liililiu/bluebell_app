@@ -19,31 +19,26 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var lg *zap.Logger
-
 // 注意这里的lg暂时没有用全局zap.L()代替
-
-// InitLogger 初始化Logger
+var lg *zap.Logger
 
 func Init(cfg *settings.LogConfig, mode string) (err error) {
 	// core 需要三部分
 
-	// 第二部分：encoder
+	// 第二部分：encoder;编码器(如何写入日志)
 	encoder := getEncoder()
 
-	// 第三部分： level
+	// 第三部分： level;哪种级别的日志将被写入
 	var l = new(zapcore.Level)
 	// 将配置文件中的level类型转换为zapCore的level
 	err = l.UnmarshalText([]byte(
-		//viper.GetString("" + "log.level"),
 		cfg.Level,
 	))
-
 	if err != nil {
 		fmt.Println("将配置文件中的level类型转换为zapCore的level失败，err：", err)
 		return
 	}
-	// 第一部分：writeSyncer
+	// 第一部分：writeSyncer;指定日志将写到哪里去
 	writeSyncer := getLogWriter(l.String())
 	var core zapcore.Core
 	fmt.Printf("日志模式mode的值：%v\n", mode)
@@ -52,24 +47,25 @@ func Init(cfg *settings.LogConfig, mode string) (err error) {
 		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 		core = zapcore.NewTee(
 			zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel),
-			//zapcore.NewCore(zapcore.NewCore(encoder, writeSyncer, l))
+			// dev是否需要写入文件
+			//zapcore.NewCore(encoder, writeSyncer, l),
 		)
 		fmt.Println("日志记录模式：dev")
 	} else {
 		core = zapcore.NewCore(encoder, writeSyncer, l)
 		fmt.Println("日志记录模式：非dev")
 	}
-
+	//zap.AddCaller 打印函数调用栈信息
 	lg = zap.New(core, zap.AddCaller())
-	zap.ReplaceGlobals(lg) // 替换zap包中全局的logger实例，后续在其他包中只需使用zap.L()调用即可
+	// 替换zap包中全局的logger实例，后续在其他包中只需使用zap.L()调用即可
+	zap.ReplaceGlobals(lg)
 	return
 }
 
 // Encoder 的函数式配置
-
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder // 更友好的时间显示
 	encoderConfig.TimeKey = "time"
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoderConfig.EncodeDuration = zapcore.SecondsDurationEncoder
@@ -78,10 +74,9 @@ func getEncoder() zapcore.Encoder {
 }
 
 // WriteSyncer 的函数式配置
-
 func getLogWriter(level string) zapcore.WriteSyncer {
-	// 检查日志目录
-	if ok, _ := utils.PathExists(settings.GlobalConfig.LogConfig.Dir); !ok { // 判断是否有Director文件夹
+	// 判断日志目录是否存在
+	if ok, _ := utils.PathExists(settings.GlobalConfig.LogConfig.Dir); !ok {
 		fmt.Printf("create %v directory\n", settings.GlobalConfig.LogConfig.Dir)
 		_ = os.Mkdir(settings.GlobalConfig.LogConfig.Dir, os.ModePerm)
 	}
@@ -91,15 +86,11 @@ func getLogWriter(level string) zapcore.WriteSyncer {
 		// 日志文件相关的时间 根本本地时间
 		rotatelogs.WithClock(rotatelogs.Local),
 		// 文件存活有效期
-		rotatelogs.WithMaxAge(time.Duration(settings.GlobalConfig.LogConfig.MaxAge)*24*time.Hour), // 日志留存时间
+		rotatelogs.WithMaxAge(time.Duration(settings.GlobalConfig.LogConfig.MaxAge)*24*time.Hour),
 		// 多久创建一次新的日志文件
 		rotatelogs.WithRotationTime(time.Hour*24),
 	)
-
-	// 根据条件选择是否同时打印控制台和文件日志
-	//if viper.GetBool("log.logInConsole") {
-	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
-	//}
+	// 非dev日式模式，根据需要选择是否同时打印控制台
 	//if settings.GlobalConfig.LogConfig.LogInConsole {
 	//	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
 	//}

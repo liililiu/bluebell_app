@@ -1,7 +1,6 @@
 package controller
 
 // 社区相关
-
 import (
 	"bluebell_app/dao/mysql"
 	"bluebell_app/logic"
@@ -33,7 +32,6 @@ func CommunityHandler(c *gin.Context) {
 	data, err := logic.GetCommunityList()
 	if err != nil {
 		zap.L().Error("logic.GetCommunityList() failed, ", zap.Error(err))
-		//Response500(c, CodeServerBusy)
 		Response500(c, CodeServerBusy)
 		return
 	}
@@ -60,7 +58,6 @@ func CommunityDetailHandler(c *gin.Context) {
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		zap.L().Error("用户请求id参数错误：strconv.ParseInt failed,", zap.Error(err))
-		//Response500(c, CodeServerBusy)
 		Response500(c, CodeServerBusy)
 
 		return
@@ -104,7 +101,6 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 	//业务处理，调用logic层
-
 	// == 需要获取用户uuid
 	id, err := getCurrentUser(c)
 	if err != nil {
@@ -140,7 +136,6 @@ func GetPostDetail(c *gin.Context) {
 	communityID := c.Param("id")
 	id, err := strconv.ParseInt(communityID, 10, 64)
 	if err != nil {
-
 		zap.L().Error("GetPostDetail.communityID.ParseInt failed ", zap.Error(err))
 		Response400(c, CodeInvalidParam)
 		return

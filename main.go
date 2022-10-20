@@ -22,58 +22,54 @@ import (
 // @title GoWeb项目
 // @version 1.0
 // @description Gin+Mysql+Redis快速入门GoWeb开发
-
-// @contact.name liililiu
 // @contact.url https://llbowen.com
-
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 func main() {
 	//1.加载配置
 	if err := settings.Init(); err != nil {
-		zap.L().Error("init settings failed , err: %v", zap.Error(err))
+		zap.L().Error("settings.Init failed , err: %v", zap.Error(err))
 		return
 	}
 	//2.初始化日志
 	if err := logger.Init(settings.GlobalConfig.LogConfig, settings.GlobalConfig.Mode); err != nil {
-		zap.L().Error("init logger failed , err: %v", zap.Error(err))
+		zap.L().Error("logger.Init failed , err: %v", zap.Error(err))
 		return
 	}
-	zap.L().Info("logger init success...")
+	zap.L().Info("logger.Init success...")
 
 	defer zap.L().Sync()
 
 	//3.初始化mysql
 	if err := mysql.Init(settings.GlobalConfig.MysqlConfig); err != nil {
-		zap.L().Error("init mysql failed , err: %v", zap.Error(err))
+		zap.L().Error("mysql.Init failed , err: %v", zap.Error(err))
 		return
 	}
-	zap.L().Info("mysql init success...")
+	zap.L().Info("mysql.Init success...")
 	defer mysql.Close()
 	//4.初始化redis
 	if err := redis.Init(settings.GlobalConfig.RedisConfig); err != nil {
-		zap.L().Error("init redis failed , err: %v", zap.Error(err))
+		zap.L().Error("redis.Init failed , err: %v", zap.Error(err))
 		return
 	}
-	zap.L().Info("redis init success...")
+	zap.L().Info("redis.Init success...")
 	defer redis.Close()
 
 	// 初始化gin框架内置的validator的翻译器
 	if err := controller.InitTrans("zh"); err != nil {
-		zap.L().Error("init InitTrans failed , err: %v", zap.Error(err))
+		zap.L().Error("validator.InitTrans init failed , err: %v", zap.Error(err))
 		return
 	}
-
 	zap.L().Info("validator.InitTrans init success...")
 
 	//uuid 初始化
 	if err := sf.Init(settings.GlobalConfig.SnowflakeConfig.StartTime, settings.GlobalConfig.SnowflakeConfig.MachineID); err != nil {
-		zap.L().Error("init uuid failed , err: %v", zap.Error(err))
+		zap.L().Error("sf.Init failed , err: %v", zap.Error(err))
 		return
 	}
 
-	zap.L().Info("uuid init success...")
+	zap.L().Info("sf.uuid.Init init success...")
 	zap.L().Info("all init success, start to SetupRouter...")
 
 	//5.注册路由
@@ -108,6 +104,5 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		zap.L().Fatal("Server Shutdown: ", zap.Error(err))
 	}
-
 	zap.L().Info("Server exiting")
 }

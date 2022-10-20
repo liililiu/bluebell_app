@@ -13,7 +13,7 @@ import (
 }
 */
 
-//ResponseData 响应结构体
+// ResponseData 响应结构体
 type ResponseData struct {
 	Code ResCode     `json:"code"`
 	Msg  interface{} `json:"msg"`
@@ -22,8 +22,7 @@ type ResponseData struct {
 	//Data interface{} `json:"data"`
 }
 
-// 返回正确信息；返回数据
-
+// ResponseSuccess 返回正确信息；返回数据
 func ResponseSuccess(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, &ResponseData{
 		Code: CodeSuccess,
@@ -31,8 +30,6 @@ func ResponseSuccess(c *gin.Context, data interface{}) {
 		Data: data,
 	})
 }
-
-// 返回错误信息；返回状态码
 
 func Response500(c *gin.Context, code ResCode) {
 	c.JSON(http.StatusInternalServerError, &ResponseData{
@@ -75,7 +72,7 @@ func ResponseSuccessWithMsg(c *gin.Context, code ResCode, msg interface{}) {
 	})
 }
 
-// ResponseErrorWithMsg 上述返回消息会满足时，返回自定义信息
+// ResponseErrorWithMsg 上述返回消息不能满足时，返回自定义信息
 func ResponseErrorWithMsg(c *gin.Context, code ResCode, msg interface{}) {
 	c.JSON(http.StatusInternalServerError, &ResponseData{
 		Code: code,

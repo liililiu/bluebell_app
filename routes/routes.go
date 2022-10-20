@@ -15,6 +15,8 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
+
+	// swagger文档
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -24,7 +26,6 @@ func SetupRouter() *gin.Engine {
 	v1.POST("/login", controller.LoginHandler)
 	v1.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong!")
-
 	})
 	v1.Use(middlewares.JWTAuthMiddleware())
 	{
@@ -38,7 +39,7 @@ func SetupRouter() *gin.Engine {
 		//投票
 		v1.POST("/vote", controller.PostVoteController)
 	}
-
+	// 404路由
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"msg": 404,

@@ -1,7 +1,6 @@
 package controller
 
-// 定义code
-// 以及编写获取code对应msg的方法
+// 定义code以及编写获取code对应msg的方法
 
 type ResCode int64
 
@@ -26,15 +25,12 @@ var codeMsgMap = map[ResCode]string{
 	CodeUserNotExist:    "用户名不存在",
 	CodeInvalidPassword: "用户名密码错误",
 	CodeServerBusy:      "服务繁忙",
-
-	CodeNeedLogin:    "需要登录",
-	CodeInvalidToken: "无效token",
-
-	CodeInvalidRow: "没有相关记录",
+	CodeNeedLogin:       "需要登录",
+	CodeInvalidToken:    "无效token",
+	CodeInvalidRow:      "没有相关记录",
 }
 
 // Msg 获取code对应的msg的方法
-
 func (code ResCode) Msg() string {
 	msg, ok := codeMsgMap[code]
 	if !ok {
